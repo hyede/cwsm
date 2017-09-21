@@ -5,7 +5,8 @@ import com.cwsm.platfrom.model.dao.GenericDao;
 import com.cwsm.platfrom.model.dao.IRepositoryService;
 import com.cwsm.platfrom.model.dao.JpaGenericDao;
 import com.cwsm.platfrom.model.dao.QueryCriteria;
-import com.cwsm.platfrom.entity.EntityObject;
+
+import com.cwsm.platfrom.model.entity.EntityObject;
 import com.querydsl.core.types.OrderSpecifier;
 
 import org.springframework.beans.factory.annotation.Autowired;

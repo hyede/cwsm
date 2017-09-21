@@ -3,7 +3,7 @@ package com.cwsm.platfrom.model.dao;
 
 
 import com.cwsm.platfrom.model.bean.PageBean;
-import com.cwsm.platfrom.entity.EntityObject;
+import com.cwsm.platfrom.model.entity.EntityObject;
 
 import java.io.Serializable;
 import java.util.List;

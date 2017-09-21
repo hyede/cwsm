@@ -1,5 +1,7 @@
 package com.cwsm.user.service;
 
+import com.cwsm.platfrom.model.dao.IRepositoryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -7,4 +9,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserAccountService {
+    @Autowired
+    private IRepositoryService repositoryService;
+//    @Transactional(readOnly = true)
+//    public PageBean<UserAccount> searchUsers(UserQueryBean queryBean) {
+//
+//    }
 }

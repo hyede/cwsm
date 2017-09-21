@@ -1,7 +1,8 @@
 package com.cwsm.platfrom.model.dao.impl;
 
 import com.cwsm.platfrom.model.dao.QueryCriteria;
-import com.cwsm.platfrom.entity.EntityObject;
+
+import com.cwsm.platfrom.model.entity.EntityObject;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.dsl.BooleanExpression;

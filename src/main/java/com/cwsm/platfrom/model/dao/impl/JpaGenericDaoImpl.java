@@ -5,7 +5,7 @@ import com.cwsm.platfrom.model.dao.JpaGenericDao;
 import org.springframework.stereotype.Repository;
 
 
-import org.springframework.stereotype.Repository;
+
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
