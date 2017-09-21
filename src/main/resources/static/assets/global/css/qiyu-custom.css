@@ -1,0 +1,52 @@
+/*sweet-alert边框圆角设置*/
+.sweet-alert{
+    border-radius: 6px!important;
+}
+/*bootstrap-input样式优化开始*/
+.file-drop-zone{
+    border:1px dashed #36C6D3;
+}
+.file-preview{
+    border:1px solid #eee;
+}
+.kv-fileinput-caption{
+    border:1px solid #eee;
+}
+.file-caption-name{
+    color:#32c5d2;
+}
+/*bootstrap-input样式优化结束*/
+
+/**添加部门底部按钮位置*/
+.qiyu-footer-style{
+    right:70px;bottom:20px;position:fixed;
+}
+
+
+/* 类似部门管理左右结构这样的样式开始 */
+.todo-sidebar {
+    float: left;
+    width: 230px;
+    margin-right: 20px; }
+
+.todo-content {
+    overflow: hidden; }
+
+.todo-text-color {
+    color: #45535b; }
+
+/* END TASK BODY */
+/* RESPONSIVE MODE */
+@media (max-width: 991px) {
+    /* 991px */
+    .todo-sidebar {
+        float: none;
+        width: 100%;
+        margin: 0; }
+    .todo-sidebar > .portlet {
+        margin-bottom: 20px; }
+    .todo-sidebar > .portlet .portlet-title .tools {
+        margin-left: 5px; }
+    .todo-content {
+        overflow: visible; } }
+/* 类似部门管理左右结构这样的样式开始 */
