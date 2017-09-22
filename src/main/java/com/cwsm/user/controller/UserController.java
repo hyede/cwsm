@@ -1,6 +1,5 @@
 package com.cwsm.user.controller;
 
-import com.cwsm.home.controller.HomeController;
 import com.cwsm.user.model.bean.SaveUserBean;
 import com.cwsm.user.service.UserAccountService;
 import org.slf4j.Logger;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * Created by yede on 2017/9/22.
  */
 @Controller
-@RequestMapping(value = "/user")
+@RequestMapping(value = "/users")
 public class UserController {
     private Logger logger = LoggerFactory.getLogger(UserController.class);
     @Autowired

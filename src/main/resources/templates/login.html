@@ -4,16 +4,44 @@
 
 <head>
     <title>Home</title>
+    <link href="/webjarslocator/bootstrap/css/bootstrap.min.css"
+          th:href="@{/webjarslocator/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen" />
+    <link href="../static/css/signin.css"  th:href="@{/css/signin.css}" rel="stylesheet"/>
+    <link href="../static/css/core.css"
+          th:href="@{/css/core.css}"
+          rel="stylesheet" media="screen" />
+    <script src="/webjarslocator/jquery/jquery.min.js"
+            th:src="@{/webjarslocator/jquery/jquery.min.js}"></script>
+
+
 </head>
 <body>
-<form class="form-signin" role="form" th:action="@{/user/login}"  th:method="post">
-    <input type="text" class="form-control" placeholder="用户名"  required="required"  name="userName"  />
-    <input type="password" class="form-control" placeholder="密码" required="required"  name="passwprd" />
-    <button class="btn btn-lg btn-warning btn-block" type="submit">登录</button>
-    <label class="checkbox">
-        <input type="checkbox" value="remember-me" /> 记住我
-    </label>
-</form>
 
+<div th:replace="fragments/header :: header"></div>
+<div class="container">
+
+    <form id="form" class="form-signin" th:action="@{users/login}" th:method="post">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <label for="userName" class="sr-only">Email address</label>
+        <input type="text" id="userName" class="form-control" required="required" name="userName" placeholder="用户名"  />
+
+        <label for="password" class="sr-only">Password</label>
+        <input type="password" id="password" class="form-control" placeholder="密码" />
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" value="remember-me"/> Remember me
+            </label>
+        </div>
+        <button id="sub" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+
+</div>
 </body>
+
+<script type='text/javascript'>
+    $('#sub').click(function () {
+
+    })
+</script>
 </html>

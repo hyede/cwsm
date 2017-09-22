@@ -26,12 +26,10 @@ public class HomeController {
         return "index0";
     }
 
-    @RequestMapping("properties")
-    @ResponseBody
-    java.util.Properties properties() {
-        return System.getProperties();
+    @RequestMapping("/login")
+    String index() {
+        return "login";
     }
-
 
 
 
