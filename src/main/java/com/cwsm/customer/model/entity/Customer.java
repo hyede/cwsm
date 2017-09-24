@@ -19,10 +19,10 @@ public class Customer  extends AbstractEntity<Long> {
     @Column(name = "CUSTOMER_NAME")
     private String customerName;
 
-    @Column(name = "CUSTOMER_OPEN_ID")
+    @Column(name = "CUSTOMER_OPEN_ID",unique=true)
     private String openId;
 
-    @Column(name = "TELEPHONE")
+    @Column(name = "TELEPHONE",unique=true)
     private String telephone;
 
     @Column(name = "ADDRESS")

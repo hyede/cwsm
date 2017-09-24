@@ -16,8 +16,8 @@
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li ><a href="#">客户列表</a></li>
-                    <li th:if="${session.user}!=null"><a href="#about">我的客户</a></li>
-                    <li th:if="${session.user}!=null"><a href="#contact">成员列表</a></li>
+                    <li th:if="${session.user}!=null"><a th:href="@{${'/customers/listCustomersByUserId'}(userId=${session.user.userId})}">我的客户</a></li>
+                    <li th:if="${session.user}!=null"><a th:href="@{/users}">成员列表</a></li>
                 </ul>
                 <ul th:if="${session.user}!=null" class="nav navbar-nav navbar-right">
                     <li><a th:text="${session.user}?${session.user.userName}"></a></li>

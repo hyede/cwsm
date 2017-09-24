@@ -1,5 +1,8 @@
 package com.cwsm.user.service;
 
+import com.cwsm.customer.model.bean.CustomerBean;
+import com.cwsm.customer.model.entity.Customer;
+import com.cwsm.customer.model.entity.QCustomer;
 import com.cwsm.platfrom.model.bean.PageBean;
 import com.cwsm.platfrom.model.dao.IRepositoryService;
 import com.cwsm.platfrom.model.dao.QueryCriteria;
@@ -27,8 +30,30 @@ public class UserAccountService {
     private IRepositoryService repositoryService;
 
     @Transactional(readOnly = true)
-    public PageBean<UserAccount> searchUsers(UserQueryBean queryBean) {
-        return null;
+    public PageBean<UserAccountBean> searchUsers(UserQueryBean queryBean) {
+        PageBean<UserAccountBean> resultBean = new PageBean<UserAccountBean> ();
+        QueryCriteriaBuilder queryCriteriaBuilder=new QueryCriteriaBuilder(UserAccount.class);
+        QUserAccount qUserAccount=QUserAccount.userAccount;
+
+        queryCriteriaBuilder.setOrder(queryBean.getOrder());
+        queryCriteriaBuilder.setPageStart(queryBean.getPageStart());
+        queryCriteriaBuilder.setPageSize(queryBean.getPageSize());
+
+        if(queryBean.getUserName() !=null) {
+            queryCriteriaBuilder.addCondition(qUserAccount.userName.like("%" + queryBean.getUserName() + "%"));
+        }
+
+
+        QueryCriteria criteria = queryCriteriaBuilder.build();
+        PageBean<UserAccount> pageBean = repositoryService.query(criteria);
+        List<UserAccountBean> userAccountBeans=new ArrayList<>();
+        for(UserAccount userAccount : pageBean.getResult()) {
+            userAccountBeans.add(UserAccountBean.toUserAccountBean(userAccount));
+        }
+
+        resultBean=PageBean.copy(pageBean,userAccountBeans);
+
+        return resultBean;
     }
 
 

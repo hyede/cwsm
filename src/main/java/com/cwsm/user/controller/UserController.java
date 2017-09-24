@@ -1,9 +1,11 @@
 package com.cwsm.user.controller;
 
 import com.cwsm.platfrom.config.WebMvcConf;
+import com.cwsm.platfrom.model.bean.PageBean;
 import com.cwsm.platfrom.model.bean.UserDetailsBean;
 import com.cwsm.user.model.bean.SaveUserBean;
 import com.cwsm.user.model.bean.UserAccountBean;
+import com.cwsm.user.model.bean.UserQueryBean;
 import com.cwsm.user.model.entity.UserAccount;
 import com.cwsm.user.service.UserAccountService;
 import org.slf4j.Logger;
@@ -14,8 +16,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 /**
  * Created by yede on 2017/9/22.
@@ -89,13 +93,13 @@ public class UserController {
         return "redirect:/loginPage";
     }
 
-    @RequestMapping(value = "/index", method = RequestMethod.GET)
-    public String index() {
-        try {
 
-        } catch (Exception e) {
-            logger.error("登陆失败：" + e, e);
-        }
-        return "page/index/index";
+    //查询所有用户
+    @GetMapping("")
+    public ModelAndView list(UserQueryBean queryBean,Map<String, Object> map) {
+        PageBean<UserAccountBean> pageBean = userAccountService.searchUsers(queryBean);
+        map.put("pageBean", pageBean);
+        return new ModelAndView("userList", map);
     }
+
 }

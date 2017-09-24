@@ -45,7 +45,7 @@ public class CustomerService {
             }
             repositoryService.save(customer);
         }else {
-            throw new ServiceException(ErrorCode.duplicate_customer, "duplicate customer");
+            throw new ServiceException(ErrorCode.duplicate_customer, "重复的客户");
         }
     }
 
@@ -55,7 +55,10 @@ public class CustomerService {
         PageBean<CustomerBean> resultBean = new PageBean<CustomerBean> ();
         QueryCriteriaBuilder queryCriteriaBuilder=new QueryCriteriaBuilder(Customer.class);
         QCustomer qCustomer=QCustomer.customer;
-//
+
+        if (queryBean.getOrderBy().equals("createdTime")){
+            queryCriteriaBuilder.setOrderBy(qCustomer.createdTime);
+        }
 
         queryCriteriaBuilder.setOrder(queryBean.getOrder());
         queryCriteriaBuilder.setPageStart(queryBean.getPageStart());
@@ -67,7 +70,9 @@ public class CustomerService {
         if(queryBean.getTelephone()!=null){
             queryCriteriaBuilder.addCondition(qCustomer.telephone.like("%" + queryBean.getTelephone() + "%"));
         }
-
+        if (queryBean.getUserId()!=null){
+            queryCriteriaBuilder.addCondition(qCustomer.userAccount.id.eq(queryBean.getUserId()));
+        }
         QueryCriteria criteria = queryCriteriaBuilder.build();
         PageBean<Customer> pageBean = repositoryService.query(criteria);
         List<CustomerBean> customerBeans=new ArrayList<>();
@@ -75,7 +80,7 @@ public class CustomerService {
             customerBeans.add(CustomerBean.toCustomerBean(customer));
         }
 
-        resultBean=PageBean.copy(resultBean,customerBeans);
+        resultBean=PageBean.copy(pageBean,customerBeans);
 
         return resultBean;
     }
@@ -95,7 +100,46 @@ public class CustomerService {
         if (tel!=null){
             queryCriteriaBuilder.addCondition(qCustomer.telephone.eq(tel));
         }
+        QueryCriteria queryCriteria = queryCriteriaBuilder.buildOR();
+        return repositoryService.exist(queryCriteria);
+    }
+
+    // 查询客户是否存在 通过手机
+    @Transactional
+    public boolean isExistCustomerByTel(String tel) {
+        if (tel==null){
+            return false;
+        }
+        QCustomer qCustomer = QCustomer.customer;
+        QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(Customer.class);
+
+            queryCriteriaBuilder.addCondition(qCustomer.telephone.eq(tel));
+
         QueryCriteria queryCriteria = queryCriteriaBuilder.build();
         return repositoryService.exist(queryCriteria);
+    }
+
+    // 查询客户是否存在 通过微信号
+    @Transactional
+    public boolean isExistCustomerByOpenId(String openId) {
+        if (openId==null){
+            return false;
+        }
+        QCustomer qCustomer = QCustomer.customer;
+        QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(Customer.class);
+
+        queryCriteriaBuilder.addCondition(qCustomer.openId.eq(openId));
+
+        QueryCriteria queryCriteria = queryCriteriaBuilder.build();
+        return repositoryService.exist(queryCriteria);
+    }
+
+    // 通过id删除客户
+    @Transactional
+    public void deleteCustomerIdByCustomerId(Long customerId) {
+        Customer customer= repositoryService.getById(Customer.class,customerId);
+        if (customer!=null){
+            repositoryService.delete(customer);
+        }
     }
 }

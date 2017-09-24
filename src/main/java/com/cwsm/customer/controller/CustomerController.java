@@ -4,16 +4,26 @@ import com.cwsm.customer.model.bean.CustomerBean;
 import com.cwsm.customer.model.bean.CustomerQueryBean;
 import com.cwsm.customer.model.bean.SaveCustomerBean;
 import com.cwsm.customer.service.CustomerService;
+import com.cwsm.platfrom.exception.ServiceException;
+import com.cwsm.platfrom.model.bean.PageBean;
 import com.cwsm.platfrom.model.bean.UserDetails;
 import com.cwsm.platfrom.service.AppSec;
+import com.cwsm.user.model.bean.UserAccountBean;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+import sun.security.util.KeyUtil;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/customers")
@@ -23,23 +33,75 @@ public class CustomerController {
 
     //创建客户
     @RequestMapping(value = "/saveCustomer", method = RequestMethod.POST)
-    public String saveCustomer(Model model, @Valid SaveCustomerBean customerBean, BindingResult result) {
+    public ModelAndView saveCustomer(Map<String, Object> map, @Valid SaveCustomerBean customerBean, BindingResult result) {
         if (result.hasErrors()) {
-            model.addAttribute("MSG", "出错啦！");
+            map.put("msg", result.getFieldError().getDefaultMessage());
+            map.put("url", "/home");
+            return new ModelAndView("fragments/error", map);
         } else {
-            UserDetails userDetails = AppSec.getLoginUser();
-            if (userDetails != null) {
-                customerBean.setUserId((Long) userDetails.getUserId());
+
+            try {
+                UserDetails userDetails = AppSec.getLoginUser();
+                if (userDetails != null) {
+                    customerBean.setUserId((Long) userDetails.getUserId());
+                }
+                customerService.saveCustomer(customerBean);
+            } catch (ServiceException e) {
+                map.put("msg", e.getMessage());
+                map.put("url", "/home");
+                return new ModelAndView("fragments/error", map);
             }
-            customerService.saveCustomer(customerBean);
-            model.addAttribute("MSG", "提交成功！");
+
         }
-        return "home";
+        map.put("url", "/home");
+        return new ModelAndView("fragments/success", map);
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public void list(Model model, CustomerQueryBean queryBean) {
+    public void listCustomers(Model model, CustomerQueryBean queryBean) {
         model.addAttribute("pageBean", customerService.listCustomers(queryBean));
+    }
+
+
+
+
+
+    @RequestMapping(value = "/checkOpenId", method = RequestMethod.GET)
+    @ResponseBody
+    public String checkOpenId(@RequestParam String openId) {
+        boolean isExist = customerService.isExistCustomerByOpenId(openId);
+        if (isExist) {
+            return "1";
+        } else {
+            return "-1";
+        }
+    }
+
+    @RequestMapping(value = "/checkTel", method = RequestMethod.GET)
+    @ResponseBody
+    public String checkTel(String telephone) {
+        boolean isExist = customerService.isExistCustomerByTel(telephone);
+        if (isExist) {
+            return "1";
+        } else {
+            return "-1";
+        }
+    }
+
+
+    @RequestMapping(value = "listCustomersByUserId", method = RequestMethod.GET)
+    public ModelAndView listCustomersBy(CustomerQueryBean queryBean,Map<String, Object> map) {
+
+        PageBean<CustomerBean> pageBean = customerService.listCustomers(queryBean);
+        map.put("pageBean", pageBean);
+        return new ModelAndView("myCustomerList", map);
+    }
+
+    @RequestMapping(value = "/delete", method = RequestMethod.GET)
+    public ModelAndView deleteCustomerIdByCustomerId(long customerId,Map<String, Object> map) {
+        customerService.deleteCustomerIdByCustomerId(customerId);
+        map.put("url", "/customers/listCustomersByUserId?userId"+AppSec.getLoginUser().getUserId());
+        return new ModelAndView("fragments/success", map);
     }
 
 }

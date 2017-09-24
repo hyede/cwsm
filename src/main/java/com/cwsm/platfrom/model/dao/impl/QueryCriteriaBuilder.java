@@ -67,4 +67,17 @@ public class QueryCriteriaBuilder {
         return queryCriteria;
     }
 
+    public QueryCriteria buildOR() {
+        BooleanExpression result = null;
+        for(BooleanExpression expression : expressions) {
+            if(result == null) {
+                result = expression;
+            } else {
+                result = result.or(expression);
+            }
+        }
+        queryCriteria.setCriteria(result);
+        return queryCriteria;
+    }
+
 }

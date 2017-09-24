@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title>Thymeleaf example</title>
+    <link href="../static/css/styles.css"
+          th:href="@{/css/styles.css}"
+          rel="stylesheet" media="screen"/>
+
+    <link href="/webjarslocator/bootstrap/css/bootstrap.min.css"
+          th:href="@{/webjarslocator/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen"/>
+    <link href="../static/css/core.css"
+          th:href="@{/css/core.css}"
+          rel="stylesheet" media="screen"/>
+    <script src="/webjarslocator/jquery/jquery.min.js"
+            th:src="@{/webjarslocator/jquery/jquery.min.js}"></script>
+
+</head>
+
+<body>
+<div th:replace="header :: header"></div>
+<div style="width:800px; margin:0 auto;">
+
+    <h1>CWSM成员列表</h1>
+
+    <div class="generic-info">
+        <div th:if="${pageBean!=null}"  class="table-responsive">
+            <table  th:if="${not #lists.isEmpty(pageBean.result)}" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>成员名称</th>
+                    <th>成员密码</th>
+                    <th>成员状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr  th:each="userAccountBean,userAccountStat : ${pageBean.result}">
+                    <td th:text="${userAccountStat.index}"></td>
+                    <td th:text="${userAccountBean.userName}"></td>
+                    <td th:text="${userAccountBean.password}"></td>
+                    <td th:text="${userAccountBean.accountStatus}"></td>
+                    <td><a href="#">修改</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!--分页-->
+        <div class="col-md-12 column">
+                <ul class="pagination pull-right">
+                    <li th:class="${pageBean.pageStart eq 1} ? 'disabled' : ''">
+                        <a th:if="${pageBean.pageStart != 1}" th:href="@{${'/users'}(pageStart=${pageBean.pageStart-1},pageSize=${pageBean.pageSize})}">上一页</a>
+                        <a th:if="${pageBean.pageStart eq 1}" href="javascript:void(0);">上一页</a>
+                    </li>
+
+                    <li th:each="pageNo : ${#numbers.sequence(1, pageBean.totalPages )}" th:class="${pageBean.pageStart eq pageNo}? 'active' : ''">
+                        <a th:if="${pageBean.pageStart  eq pageNo}" href="javascript:void(0);">
+                            <span th:text="${pageNo }"></span>
+                        </a>
+                        <a th:if="${not (pageBean.pageStart  eq pageNo)}" th:href="@{${'/users'}(pageStart=${pageNo},pageSize=${pageBean.pageSize})}">
+                            <span th:text="${pageNo }"></span>
+                        </a>
+
+                    </li>
+                    <li th:class="${pageBean.pageStart ge pageBean.totalPages} ? 'disabled' : ''">
+                        <a th:if="${ pageBean.pageStart lt pageBean.totalPages}"  th:href="@{${'/users'}(pageStart=${pageBean.pageStart+1},pageSize=${pageBean.pageSize})}">下一页</a>
+                        <a th:if="${pageBean.pageStart  ge pageBean.totalPages}" href="javascript:void(0);">下一页</a>
+                    </li>
+                </ul>
+            </div>
+    </div>
+
+
+    <footer>
+        <div th:replace="footer :: copy">&copy; 2016 blog.codeleak.pl</div>
+    </footer>
+</div>
+</body>
+
+</html>

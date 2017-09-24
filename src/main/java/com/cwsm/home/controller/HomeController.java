@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * 首页和登录基控制器
+ *
  * @author zhangqing
  */
 @Controller
@@ -23,34 +24,25 @@ public class HomeController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(Model model) {
-        prepareHotelDataModel();
         prepareCustomerBeanModel();
-        model.addAttribute("pageBean", customerService.listCustomers(new CustomerQueryBean()));
-        return  "home";
+        CustomerQueryBean customerQueryBean = new CustomerQueryBean();
+        customerQueryBean.setOrderBy("createdTime");
+        customerQueryBean.setPageSize(5);
+        model.addAttribute("pageBean", customerService.listCustomers(customerQueryBean));
+        return "home";
     }
+
     @ModelAttribute("saveCustomerBean")
     public SaveCustomerBean prepareCustomerBeanModel() {
         return new SaveCustomerBean();
     }
 
-    @ModelAttribute("hotelData")
-    public HotelData prepareHotelDataModel() {
-        HotelData hotelData=new HotelData();
-        hotelData.setAddress("nan");
-        hotelData.setName("yede");
-        return hotelData;
-    }
 
     @RequestMapping(value = "/home", method = RequestMethod.GET)
     public String showHome(Model model) {
-        prepareHotelDataModel();
-        prepareCustomerBeanModel();
+        return index(model);
 
-        return  "home";
     }
-
-
-
 
 
 }
