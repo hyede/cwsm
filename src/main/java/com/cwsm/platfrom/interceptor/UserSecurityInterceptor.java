@@ -26,12 +26,12 @@ public class UserSecurityInterceptor implements HandlerInterceptor {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        System.out.println("处理中");
+
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        System.out.println("出去了");
+
         if (AppSec.getLoginUser() != null) {
             request.getSession().setAttribute(WebMvcConf.SESSION_KEY, AppSec.getLoginUser());
         }

@@ -32,7 +32,7 @@ public class CustomerController {
     public ModelAndView saveCustomer(Map<String, Object> map, @Valid SaveCustomerBean customerBean, BindingResult result) {
         if (result.hasErrors()) {
             map.put("msg", result.getFieldError().getDefaultMessage());
-            map.put("url", "/home");
+            map.put("url", "../home");
             return new ModelAndView("fragments/error", map);
         } else {
 
@@ -44,12 +44,12 @@ public class CustomerController {
                 customerService.saveCustomer(customerBean);
             } catch (ServiceException e) {
                 map.put("msg", e.getMessage());
-                map.put("url", "/home");
+                map.put("url", "../home");
                 return new ModelAndView("fragments/error", map);
             }
 
         }
-        map.put("url", "/home");
+        map.put("url", "../home");
         return new ModelAndView("fragments/success", map);
     }
 
@@ -96,7 +96,7 @@ public class CustomerController {
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public ModelAndView deleteCustomerIdByCustomerId(long customerId,Map<String, Object> map) {
         customerService.deleteCustomerIdByCustomerId(customerId);
-        map.put("url", "/customers/listCustomersByUserId?userId"+AppSec.getLoginUser().getUserId());
+        map.put("url", "./customers/listCustomersByUserId?userId"+AppSec.getLoginUser().getUserId());
         return new ModelAndView("fragments/success", map);
     }
 
@@ -111,7 +111,7 @@ public class CustomerController {
     public ModelAndView updateCustomerIdByCustomerId(Map<String, Object> map, @Valid SaveCustomerBean customerBean, BindingResult result) {
         if (result.hasErrors()) {
             map.put("msg", result.getFieldError().getDefaultMessage());
-            map.put("url", "/home");
+            map.put("url", "../home");
             return new ModelAndView("fragments/error", map);
         } else {
             try {
@@ -119,11 +119,11 @@ public class CustomerController {
                 customerService.updateCustomer(customerBean);
             } catch (ServiceException e) {
                 map.put("msg", e.getMessage());
-                map.put("url", "/home");
+                map.put("url", "../home");
                 return new ModelAndView("fragments/error", map);
             }
         }
-        map.put("url", "/customers/listCustomersByUserId?userId"+AppSec.getLoginUser().getUserId());
+        map.put("url", "../customers/listCustomersByUserId?userId="+AppSec.getLoginUser().getUserId());
         return new ModelAndView("fragments/success", map);
     }
 

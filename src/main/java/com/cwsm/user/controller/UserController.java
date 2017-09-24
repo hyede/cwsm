@@ -119,7 +119,7 @@ public class UserController {
              userAccountBean = userAccountService.getUserAccountById(userId);
         }catch (ServiceException e){
             map.put("msg", e.getMessage());
-            map.put("url", "/home");
+            map.put("url", "../home");
             return new ModelAndView("fragments/error", map);
         }
 
@@ -131,7 +131,7 @@ public class UserController {
     public ModelAndView updateCustomerIdByCustomerId(Map<String, Object> map, @Valid SaveUserBean saveUserBean, BindingResult result) {
         if (result.hasErrors()) {
             map.put("msg", result.getFieldError().getDefaultMessage());
-            map.put("url", "/home");
+            map.put("url", "../home");
             return new ModelAndView("fragments/error", map);
         } else {
             try {
@@ -139,11 +139,11 @@ public class UserController {
                 userAccountService.updateUserAccount(saveUserBean);
             } catch (ServiceException e) {
                 map.put("msg", e.getMessage());
-                map.put("url", "/home");
+                map.put("url", "../home");
                 return new ModelAndView("fragments/error", map);
             }
         }
-        map.put("url", "/users");
+        map.put("url", "../users");
         return new ModelAndView("fragments/success", map);
     }
 

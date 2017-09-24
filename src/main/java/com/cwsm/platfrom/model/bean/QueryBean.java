@@ -10,7 +10,7 @@ public class QueryBean extends GenericObject {
     private static final String DEFAULT_ORDER = DESCENDING_ORDER;
     private static final String DEFAULT_ORDER_BY = "id";
     private static final int DEFAULT_PAGE_START = 1;
-    private static final int DEFAULT_PAGE_SIZE = 2;
+    private static final int DEFAULT_PAGE_SIZE = 20;
     public static final int MAX_PAGE_SIZE = 999999;
 
     private String orderBy = DEFAULT_ORDER_BY;
