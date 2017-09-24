@@ -20,7 +20,7 @@ public class UserSecurityInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        AppSec.setLoginUser((UserDetailsBean)obj);
+        AppSec.setLoginUser((UserDetailsBean) obj);
         return true;
     }
 
@@ -31,7 +31,10 @@ public class UserSecurityInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-       System.out.println("出去了");
-//        AppSec.clearLoginUser();
+        System.out.println("出去了");
+        if (AppSec.getLoginUser() != null) {
+            request.getSession().setAttribute(WebMvcConf.SESSION_KEY, AppSec.getLoginUser());
+        }
+        AppSec.clearLoginUser();
     }
 }

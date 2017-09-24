@@ -24,10 +24,12 @@
 <div style="width:800px; margin:0 auto;">
 
     <h1>我的客户列表</h1>
-
-    <div class="generic-info">
-        <div th:if="${pageBean!=null}"  class="table-responsive">
-            <table  th:if="${not #lists.isEmpty(pageBean.result)}" class="table table-striped">
+    <div  th:if="${ #lists.isEmpty(pageBean.result)}" class="table-responsive">
+        <h3>暂无数据</h3>
+    </div>
+    <div class="generic-info" th:if="${not #lists.isEmpty(pageBean.result)}">
+        <div   class="table-responsive">
+            <table  class="table table-striped">
                 <thead>
                 <tr>
                 <tr>
@@ -47,7 +49,7 @@
                     <td th:text="${customer.telephone}"></td>
                     <td th:text="${customer.address}"></td>
                     <td th:text="${#dates.format(customer.createdTime,'yyyy-MM-dd HH:mm:ss')}"></td>
-                    <td><a th:href="@{${'/customers/update'}(customerId=${customer.customerId})}">修改</a></td>
+                    <td><a th:href="@{${'/customers/getCustomerById'}(customerId=${customer.customerId})}">修改</a></td>
                     <td>
                         <a th:href="@{${'/customers/delete'}(customerId=${customer.customerId})}">删除</a>
                     </td>

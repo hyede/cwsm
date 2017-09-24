@@ -29,34 +29,64 @@ public class CustomerService {
     //创建客户
     @Transactional
     public void saveCustomer(SaveCustomerBean customerBean) {
-
-        boolean isExist=isExistCustomer(customerBean.getOpenId(),customerBean.getTelephone());
-        if (!isExist){
-            Customer customer=new Customer();
-//        customer.setCustomerName(customerBean.getCustomerName());
-//        customer.setOpenId(customerBean.getOpenId());
-//        customer.setTelephone(customerBean.getTelephone());
-//        customer.setAddress(customerBean.getAddress());
-            BeanUtils.copyProperties(customerBean,customer);
+        boolean isExist = isExistCustomer(customerBean.getOpenId(), customerBean.getTelephone());
+        if (!isExist) {
+            Customer   customer = new Customer();
+            BeanUtils.copyProperties(customerBean, customer);
             customer.setCreatedTime(Calendar.getInstance().getTime());
-            if (customerBean.getUserId()!=null){
-                 UserAccount userAccount= repositoryService.getById(UserAccount.class,customerBean.getUserId());
+            if (customerBean.getUserId() != null) {
+                UserAccount userAccount = repositoryService.getById(UserAccount.class, customerBean.getUserId());
                 customer.setUserAccount(userAccount);
             }
             repositoryService.save(customer);
-        }else {
+        } else {
             throw new ServiceException(ErrorCode.duplicate_customer, "重复的客户");
         }
+    }
+
+    //更新客户
+    @Transactional
+    public CustomerBean updateCustomer(SaveCustomerBean customerBean) {
+        Customer customer = repositoryService.getById(Customer.class, customerBean.getCustomerId());
+        if (customer == null) {
+            throw new ServiceException(ErrorCode.invalid_customer, "无效的客户");
+        }
+
+        //先判断是否微信号重复
+        boolean isOpenId=isExistCustomerByOpenId(customerBean.getOpenId(),customerBean.getCustomerId());
+        if (isOpenId){
+            throw new ServiceException(ErrorCode.duplicate_openId, "重复的微信号");
+        }
+        boolean isTel=isExistCustomerByTel(customerBean.getTelephone(),customerBean.getCustomerId());
+        if (isTel){
+            throw new ServiceException(ErrorCode.duplicate_tel, "重复的手机号");
+        }
+
+        if (customerBean.getAddress()!=null){
+            customer.setAddress(customerBean.getAddress());
+        }
+
+        if (customerBean.getOpenId()!=null){
+            customer.setOpenId(customerBean.getOpenId());
+        }
+        if (customerBean.getTelephone()!=null){
+            customer.setTelephone(customerBean.getTelephone());
+        }
+        if (customerBean.getCustomerName()!=null){
+            customer.setCustomerName(customerBean.getCustomerName());
+        }
+        repositoryService.save(customer);
+      return   CustomerBean.toCustomerBean(customer);
     }
 
 
     @Transactional
     public PageBean<CustomerBean> listCustomers(CustomerQueryBean queryBean) {
-        PageBean<CustomerBean> resultBean = new PageBean<CustomerBean> ();
-        QueryCriteriaBuilder queryCriteriaBuilder=new QueryCriteriaBuilder(Customer.class);
-        QCustomer qCustomer=QCustomer.customer;
+        PageBean<CustomerBean> resultBean = new PageBean<CustomerBean>();
+        QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(Customer.class);
+        QCustomer qCustomer = QCustomer.customer;
 
-        if (queryBean.getOrderBy().equals("createdTime")){
+        if (queryBean.getOrderBy().equals("createdTime")) {
             queryCriteriaBuilder.setOrderBy(qCustomer.createdTime);
         }
 
@@ -64,23 +94,23 @@ public class CustomerService {
         queryCriteriaBuilder.setPageStart(queryBean.getPageStart());
         queryCriteriaBuilder.setPageSize(queryBean.getPageSize());
 
-        if(queryBean.getOpenId() !=null) {
+        if (queryBean.getOpenId() != null) {
             queryCriteriaBuilder.addCondition(qCustomer.openId.eq(queryBean.getOpenId()));
         }
-        if(queryBean.getTelephone()!=null){
+        if (queryBean.getTelephone() != null) {
             queryCriteriaBuilder.addCondition(qCustomer.telephone.like("%" + queryBean.getTelephone() + "%"));
         }
-        if (queryBean.getUserId()!=null){
+        if (queryBean.getUserId() != null) {
             queryCriteriaBuilder.addCondition(qCustomer.userAccount.id.eq(queryBean.getUserId()));
         }
         QueryCriteria criteria = queryCriteriaBuilder.build();
         PageBean<Customer> pageBean = repositoryService.query(criteria);
-        List<CustomerBean> customerBeans=new ArrayList<>();
-        for(Customer customer : pageBean.getResult()) {
+        List<CustomerBean> customerBeans = new ArrayList<>();
+        for (Customer customer : pageBean.getResult()) {
             customerBeans.add(CustomerBean.toCustomerBean(customer));
         }
 
-        resultBean=PageBean.copy(pageBean,customerBeans);
+        resultBean = PageBean.copy(pageBean, customerBeans);
 
         return resultBean;
     }
@@ -88,16 +118,16 @@ public class CustomerService {
 
     // 查询客户是否存在
     @Transactional
-    public boolean isExistCustomer(String openId,String tel) {
-        if (openId==null&&tel==null){
+    public boolean isExistCustomer(String openId, String tel) {
+        if (openId == null && tel == null) {
             return false;
         }
         QCustomer qCustomer = QCustomer.customer;
         QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(Customer.class);
-        if (openId!=null){
+        if (openId != null) {
             queryCriteriaBuilder.addCondition(qCustomer.openId.eq(openId));
         }
-        if (tel!=null){
+        if (tel != null) {
             queryCriteriaBuilder.addCondition(qCustomer.telephone.eq(tel));
         }
         QueryCriteria queryCriteria = queryCriteriaBuilder.buildOR();
@@ -106,14 +136,18 @@ public class CustomerService {
 
     // 查询客户是否存在 通过手机
     @Transactional
-    public boolean isExistCustomerByTel(String tel) {
-        if (tel==null){
+    public boolean isExistCustomerByTel(String tel ,Long additionalCustomerId) {
+        if (tel == null) {
             return false;
         }
         QCustomer qCustomer = QCustomer.customer;
         QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(Customer.class);
 
-            queryCriteriaBuilder.addCondition(qCustomer.telephone.eq(tel));
+        queryCriteriaBuilder.addCondition(qCustomer.telephone.eq(tel));
+
+        if (additionalCustomerId!=null){
+            queryCriteriaBuilder.addCondition(qCustomer.id.ne(additionalCustomerId));
+        }
 
         QueryCriteria queryCriteria = queryCriteriaBuilder.build();
         return repositoryService.exist(queryCriteria);
@@ -121,14 +155,17 @@ public class CustomerService {
 
     // 查询客户是否存在 通过微信号
     @Transactional
-    public boolean isExistCustomerByOpenId(String openId) {
-        if (openId==null){
+    public boolean isExistCustomerByOpenId(String openId,Long additionalCustomerId) {
+        if (openId == null) {
             return false;
         }
         QCustomer qCustomer = QCustomer.customer;
         QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(Customer.class);
 
         queryCriteriaBuilder.addCondition(qCustomer.openId.eq(openId));
+        if (additionalCustomerId!=null){
+            queryCriteriaBuilder.addCondition(qCustomer.id.ne(additionalCustomerId));
+        }
 
         QueryCriteria queryCriteria = queryCriteriaBuilder.build();
         return repositoryService.exist(queryCriteria);
@@ -137,9 +174,21 @@ public class CustomerService {
     // 通过id删除客户
     @Transactional
     public void deleteCustomerIdByCustomerId(Long customerId) {
-        Customer customer= repositoryService.getById(Customer.class,customerId);
-        if (customer!=null){
+        Customer customer = repositoryService.getById(Customer.class, customerId);
+        if (customer != null) {
             repositoryService.delete(customer);
         }
     }
+
+
+    // 通过id查询客户
+    @Transactional
+    public CustomerBean getCustomerIdByCustomerId(Long customerId) {
+        Customer customer = repositoryService.getById(Customer.class, customerId);
+        if (customer == null) {
+            throw new ServiceException(ErrorCode.invalid_customer, "无效的客户");
+        }
+        return CustomerBean.toCustomerBean(customer);
+    }
+
 }

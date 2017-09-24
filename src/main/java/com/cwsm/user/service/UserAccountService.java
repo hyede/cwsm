@@ -3,6 +3,8 @@ package com.cwsm.user.service;
 import com.cwsm.customer.model.bean.CustomerBean;
 import com.cwsm.customer.model.entity.Customer;
 import com.cwsm.customer.model.entity.QCustomer;
+import com.cwsm.platfrom.exception.ErrorCode;
+import com.cwsm.platfrom.exception.ServiceException;
 import com.cwsm.platfrom.model.bean.PageBean;
 import com.cwsm.platfrom.model.dao.IRepositoryService;
 import com.cwsm.platfrom.model.dao.QueryCriteria;
@@ -31,50 +33,61 @@ public class UserAccountService {
 
     @Transactional(readOnly = true)
     public PageBean<UserAccountBean> searchUsers(UserQueryBean queryBean) {
-        PageBean<UserAccountBean> resultBean = new PageBean<UserAccountBean> ();
-        QueryCriteriaBuilder queryCriteriaBuilder=new QueryCriteriaBuilder(UserAccount.class);
-        QUserAccount qUserAccount=QUserAccount.userAccount;
+        PageBean<UserAccountBean> resultBean = new PageBean<UserAccountBean>();
+        QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(UserAccount.class);
+        QUserAccount qUserAccount = QUserAccount.userAccount;
 
         queryCriteriaBuilder.setOrder(queryBean.getOrder());
         queryCriteriaBuilder.setPageStart(queryBean.getPageStart());
         queryCriteriaBuilder.setPageSize(queryBean.getPageSize());
 
-        if(queryBean.getUserName() !=null) {
+        if (queryBean.getUserName() != null) {
             queryCriteriaBuilder.addCondition(qUserAccount.userName.like("%" + queryBean.getUserName() + "%"));
         }
 
 
         QueryCriteria criteria = queryCriteriaBuilder.build();
         PageBean<UserAccount> pageBean = repositoryService.query(criteria);
-        List<UserAccountBean> userAccountBeans=new ArrayList<>();
-        for(UserAccount userAccount : pageBean.getResult()) {
+        List<UserAccountBean> userAccountBeans = new ArrayList<>();
+        for (UserAccount userAccount : pageBean.getResult()) {
             userAccountBeans.add(UserAccountBean.toUserAccountBean(userAccount));
         }
 
-        resultBean=PageBean.copy(pageBean,userAccountBeans);
+        resultBean = PageBean.copy(pageBean, userAccountBeans);
 
         return resultBean;
     }
 
+    @Transactional
+    public UserAccountBean getUserAccountById(Long userId) {
+        UserAccount userAccount = repositoryService.getById(UserAccount.class, userId);
+        if (userAccount == null) {
+            throw new ServiceException(ErrorCode.invalid_user_account, "无效的账号");
+        }
+        return UserAccountBean.toUserAccountBean(userAccount);
+    }
 
     @Transactional
     public UserAccount saveUserAccount(SaveUserBean saveBean) {
-        if (isExistUserName(saveBean.getUserName())) {
+        if (isExistUserName(saveBean.getUserName(),null)) {
             return null;
         }
         UserAccount userAccount = new UserAccount();
         userAccount.setAccountStatus(UserAccount.Status.active);
         userAccount.setUserName(saveBean.getUserName());
         userAccount.setPassword(saveBean.getPassword());
-        userAccount =repositoryService.save(userAccount);
+        userAccount = repositoryService.save(userAccount);
         return userAccount;
     }
 
     @Transactional(readOnly = true)
-    public boolean isExistUserName(String userName) {
+    public boolean isExistUserName(String userName,Long userId) {
         QUserAccount qUserAccount = QUserAccount.userAccount;
         QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(UserAccount.class);
         queryCriteriaBuilder.addCondition(qUserAccount.userName.eq(userName));
+        if (userId!=null){
+            queryCriteriaBuilder.addCondition(qUserAccount.id.ne(userId));
+        }
         QueryCriteria queryCriteria = queryCriteriaBuilder.build();
         return repositoryService.exist(queryCriteria);
     }
@@ -142,4 +155,28 @@ public class UserAccountService {
         UserAccountBean userAccountBean = UserAccountBean.toUserAccountBean(pageBean.getResult().get(0));
         return userAccountBean;
     }
+
+    @Transactional
+    public UserAccountBean updateUserAccount(SaveUserBean saveUserBean) {
+        UserAccount userAccount = repositoryService.getById(UserAccount.class, saveUserBean.getUserId());
+        if (!userAccount.getUserName().equals(saveUserBean.getUserName())) {
+            boolean isExist = isExistUserName(saveUserBean.getUserName(),null);
+            if (isExist) {
+                throw new ServiceException(ErrorCode.duplicate_user_name, "重复的账号名");
+            }
+        }
+
+        if (saveUserBean.getPassword() != null) {
+            userAccount.setPassword(saveUserBean.getPassword());
+        }
+
+        if (saveUserBean.getUserName() != null) {
+            userAccount.setUserName(saveUserBean.getUserName());
+        }
+
+        repositoryService.save(userAccount);
+
+        return UserAccountBean.toUserAccountBean(userAccount);
+    }
+
 }
