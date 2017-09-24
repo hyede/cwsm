@@ -20,7 +20,7 @@ public class UserAccount  extends AbstractEntity<Long> {
         active,
         inactive
     }
-    @Column(name = "USER_NAME")
+    @Column(name = "USER_NAME",unique = true)
     private String userName;
 
     @Column(name = "USER_PWD")
