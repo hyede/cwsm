@@ -88,7 +88,7 @@
         var openId = $("#openId").val();
         var customerId = $("#customerId").val();
 
-        $.get("/customers/checkOpenId",{ openId: openId, additionalCustomerId: customerId}, function (result) {
+        $.get("./checkOpenId",{ openId: openId, additionalCustomerId: customerId}, function (result) {
             if (result == "1") {
                 $("#openIdTip").fadeIn();
             }
@@ -100,7 +100,7 @@
         var telephone = $("#telephone").val();
         var customerId = $("#customerId").val();
 
-        $.get("/customers/checkTel",{ telephone: telephone, additionalCustomerId: customerId} , function (result) {
+        $.get("./checkTel",{ telephone: telephone, additionalCustomerId: customerId} , function (result) {
             if (result == "1") {
                 $("#telephoneTip").fadeIn();
             }

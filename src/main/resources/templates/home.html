@@ -117,7 +117,7 @@
 
         var openId = $("#openId").val();
 
-        $.get("/customers/checkOpenId?openId="+openId, function (result) {
+        $.get("./customers/checkOpenId?openId="+openId, function (result) {
             if (result == "1") {
                 $("#openIdTip").fadeIn();
             }
@@ -128,7 +128,7 @@
 
         var telephone = $("#telephone").val();
 
-        $.get("/customers/checkTel?telephone="+telephone, function (result) {
+        $.get("./customers/checkTel?telephone="+telephone, function (result) {
             if (result == "1") {
                 $("#telephoneTip").fadeIn();
             }

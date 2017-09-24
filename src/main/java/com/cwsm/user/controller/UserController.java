@@ -49,7 +49,7 @@ public class UserController {
     }
 
 
-    @RequestMapping(value = "/doregist", method = RequestMethod.POST)
+    @RequestMapping(value = "/regist", method = RequestMethod.POST)
     @ResponseBody
     public String doregist(SaveUserBean saveUserBean, HttpSession session) {
         UserAccountBean userAccountBean = userAccountService.isExistUserNameAndPassword(saveUserBean.getUserName(), saveUserBean.getPassword());

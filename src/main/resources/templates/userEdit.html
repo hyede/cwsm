@@ -41,17 +41,21 @@
                                class="form-control" th:field="*{userName}" required="required"/>
                         <div class="form-group  alert-danger" style="display: none" role="alert" id="userNameTip">用户名重复
                         </div>
+                        <div class="form-group  alert-danger" style="display: none" role="alert" id="userNameTip2">用户名必须汉字 英文字母 数字 下划线组成，3-20位
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>密码</label>
                         <input id="password" type="text" th:value="${userAccountBean.password}" th:field="*{password}"
                                required="required" class="form-control"/>
+                        <div class="form-group  alert-danger" style="display: none" role="alert" id="passwordTip">请输入6-10的数字密码
+                        </div>
                     </div>
 
-                    <div class="form-group readonly">
+                    <div class="form-group ">
                         <label>状态</label>
                         <input id="accountStatus" type="text" th:value="${userAccountBean.accountStatus}" th:field="*{accountStatus}"
-                            class="form-control"/>
+                            class="form-control" disabled="true"/>
                     </div>
                     <button type="submit" class="btn btn-default">提交</button>
                 </form>
@@ -67,18 +71,49 @@
 <script type="text/javascript">
     $("#userName").focus(function () {
         $("#userNameTip").fadeOut();
+        $("#userNameTip2").fadeOut();
     });
+
+    $("#password").focus(function () {
+        $("#passwordTip").fadeOut();
+    });
+
+
+    var username1 = /^[\u4E00-\u9FA5a-zA-Z0-9_]{3,20}$/;
+    var password1 = /^[0-9]{6,10}/;
+
+
+
+
 
 
     $("#userName").blur(function () {
 
         var userName = $("#userName").val();
         var additionalUserId= $("#userId").val();
-        $.get("/users/checkUserName",{ userName: userName,additionalUserId:additionalUserId}, function (result) {
+
+        if (!username1.test(userName)) {
+            $("#userNameTip2").fadeIn();
+            return false;
+        }
+
+        $.get("./checkUserName",{ userName: userName,additionalUserId:additionalUserId}, function (result) {
             if (result == "1") {
                 $("#userNameTip").fadeIn();
             }
         });
+    });
+
+    $("#password").blur(function () {
+
+        var password = $("#password").val();
+
+        if (!password1.test(password)) {
+
+            $("#passwordTip").fadeIn();
+        }
+
+
     });
 
 </script>
