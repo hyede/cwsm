@@ -9,11 +9,21 @@ public class UserQueryBean extends QueryBean {
 
     private String userName;
 
+    private UserAccount.Status accountStatus;
+
     public String getUserName() {
         return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public UserAccount.Status getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(UserAccount.Status accountStatus) {
+        this.accountStatus = accountStatus;
     }
 }

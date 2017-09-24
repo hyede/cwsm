@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Home</title>
+    <link href="/webjarslocator/bootstrap/css/bootstrap.min.css"
+          th:href="@{/webjarslocator/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen" />
+    <link href="../static/css/signin.css"  th:href="@{/css/signin.css}" rel="stylesheet"/>
+    <link href="../static/css/core.css"
+          th:href="@{/css/core.css}"
+          rel="stylesheet" media="screen" />
+    <script src="/webjarslocator/jquery/jquery.min.js"
+            th:src="@{/webjarslocator/jquery/jquery.min.js}"></script>
+    <script th:src="@{/webjarslocator/bootstrap/js/bootstrap.js}"></script>
+    <style type="text/css">
+        body {
+            padding-top: 120px;
+        }
+        #cuowukuang{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="header :: header"></div>
+<div class="container">
+
+    <form id="form" class="form-signin" th:action="@{users/login}" th:method="post">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <label for="username" class="sr-only">Email address</label>
+        <input type="text" id="username" class="form-control"  name="username" placeholder="用户名"  />
+
+        <label for="password" class="sr-only">Password</label>
+        <input type="password" id="password" class="form-control" placeholder="密码" />
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" value="remember-me"/> Remember me
+            </label>
+        </div>
+        <button type="button" id="denglu" class="btn btn-default">登陆</button>
+        <div class="alert alert-danger" role="alert" id="cuowukuang"></div>
+    </form>
+
+</div>
+</body>
+<script type="text/javascript">
+    $("input").focus(function(){
+        $("#cuowukuang").fadeOut();
+    });
+    $("#denglu").click(function(){
+
+        var username1 = /^[a-z]{6,10}/;
+        var password1 = /^[0-9]{6,10}/;
+        //注册按钮的事件，用ajax提交表单
+        var userName = $("#username").val();
+
+        var password = $("#password").val();
+
+        if (!username1.test(userName)) {
+            alert("请输入6-10位字母");
+            return false;
+        }
+        if (!password1.test(password)) {
+            alert("请输入6-10的数字密码");
+            return false;
+        }
+
+        //注册按钮的事件，用ajax提交表单
+        $.post("/users/login",{
+            "userName" : userName,
+            "password" : password
+        },function(result){
+            if(result == "1"){
+                //注册成功
+                alert("登陆成功！将自动跳转到首页");
+                window.location = "/";
+            }else if(result == "-1"){
+                $("#cuowukuang").fadeIn();
+                $("#cuowukuang").html("用户名不存在或密码错误");
+            }else if(result == "-2"){
+                $("#cuowukuang").fadeIn();
+                $("#cuowukuang").html("系统错误！");
+            }
+        });
+    });
+</script>
+</html>

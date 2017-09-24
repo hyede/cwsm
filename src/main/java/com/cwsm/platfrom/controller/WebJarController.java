@@ -1,4 +1,4 @@
-package com.cwsm.home.controller;
+package com.cwsm.platfrom.controller;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;

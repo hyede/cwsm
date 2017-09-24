@@ -1,8 +1,22 @@
 package com.cwsm.user.service;
 
+import com.cwsm.platfrom.model.bean.PageBean;
 import com.cwsm.platfrom.model.dao.IRepositoryService;
+import com.cwsm.platfrom.model.dao.QueryCriteria;
+import com.cwsm.platfrom.model.dao.impl.QueryCriteriaBuilder;
+import com.cwsm.user.model.bean.LoginUserBean;
+import com.cwsm.user.model.bean.SaveUserBean;
+import com.cwsm.user.model.bean.UserAccountBean;
+import com.cwsm.user.model.bean.UserQueryBean;
+import com.cwsm.user.model.entity.QUserAccount;
+import com.cwsm.user.model.entity.UserAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Created by yede on 2017/9/21.
@@ -11,8 +25,96 @@ import org.springframework.stereotype.Service;
 public class UserAccountService {
     @Autowired
     private IRepositoryService repositoryService;
-//    @Transactional(readOnly = true)
-//    public PageBean<UserAccount> searchUsers(UserQueryBean queryBean) {
-//
-//    }
+
+    @Transactional(readOnly = true)
+    public PageBean<UserAccount> searchUsers(UserQueryBean queryBean) {
+        return null;
+    }
+
+
+    @Transactional
+    public UserAccount saveUserAccount(SaveUserBean saveBean) {
+        if (isExistUserName(saveBean.getUserName())) {
+            return null;
+        }
+        UserAccount userAccount = new UserAccount();
+        userAccount.setAccountStatus(UserAccount.Status.active);
+        userAccount.setUserName(saveBean.getUserName());
+        userAccount.setPassword(saveBean.getPassword());
+        userAccount =repositoryService.save(userAccount);
+        return userAccount;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isExistUserName(String userName) {
+        QUserAccount qUserAccount = QUserAccount.userAccount;
+        QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(UserAccount.class);
+        queryCriteriaBuilder.addCondition(qUserAccount.userName.eq(userName));
+        QueryCriteria queryCriteria = queryCriteriaBuilder.build();
+        return repositoryService.exist(queryCriteria);
+    }
+
+    @Transactional
+    public UserAccountBean login(LoginUserBean loginBean) {
+        QUserAccount qUserAccount = QUserAccount.userAccount;
+        QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(UserAccount.class);
+        if (loginBean.getUserName() != null) {
+            queryCriteriaBuilder.addCondition(qUserAccount.userName.eq(loginBean.getUserName()));
+        }
+        if (loginBean.getUserPwd() != null) {
+            queryCriteriaBuilder.addCondition(qUserAccount.password.eq(loginBean.getUserPwd()));
+        }
+        QueryCriteria<UserAccount> criteria = queryCriteriaBuilder.build();
+        PageBean<UserAccount> results = repositoryService.query(criteria);
+        UserAccount userAccount = results.getResult().get(0);
+
+
+        return UserAccountBean.toUserAccountBean(userAccount);
+    }
+
+
+    @Transactional(readOnly = true)
+    public PageBean<UserAccountBean> searchUserAccounts(UserQueryBean queryBean) {
+
+        QUserAccount qUserAccount = QUserAccount.userAccount;
+        QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(UserAccount.class);
+        if (queryBean.getUserName() != null) {
+            queryCriteriaBuilder.addCondition(qUserAccount.userName.contains(queryBean.getUserName()));
+        }
+        if (queryBean.getAccountStatus() != null) {
+            queryCriteriaBuilder.addCondition(qUserAccount.accountStatus.eq(queryBean.getAccountStatus()));
+        }
+        queryCriteriaBuilder.setOrder(queryBean.getOrder());
+        queryCriteriaBuilder.setPageStart(queryBean.getPageStart());
+        queryCriteriaBuilder.setPageSize(queryBean.getPageSize());
+        QueryCriteria<UserAccount> criteria = queryCriteriaBuilder.build();
+
+        PageBean<UserAccount> pageBean = repositoryService.query(criteria);
+        List<UserAccountBean> userAccountBeans = new ArrayList<>();
+        for (UserAccount userAccount : pageBean.getResult()) {
+            userAccountBeans.add(UserAccountBean.toUserAccountBean(userAccount));
+        }
+        return PageBean.copy(pageBean, userAccountBeans);
+
+    }
+
+    @Transactional(readOnly = true)
+    public UserAccountBean isExistUserNameAndPassword(String userName, String password) {
+        QUserAccount qUserAccount = QUserAccount.userAccount;
+        QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(UserAccount.class);
+        if (userName != null) {
+            queryCriteriaBuilder.addCondition(qUserAccount.userName.eq(userName));
+        }
+        queryCriteriaBuilder.setPageSize(Integer.MAX_VALUE);
+        if (password != null) {
+            queryCriteriaBuilder.addCondition(qUserAccount.password.eq(password));
+        }
+        QueryCriteria<UserAccount> criteria = queryCriteriaBuilder.build();
+        PageBean<UserAccount> pageBean = repositoryService.query(criteria);
+        if (pageBean.getResult() == null || pageBean.getResult().isEmpty()) {
+            return null;
+        }
+        UserAccountBean userAccountBean = UserAccountBean.toUserAccountBean(pageBean.getResult().get(0));
+        return userAccountBean;
+    }
 }

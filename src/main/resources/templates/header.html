@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<header>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/" th:href="@{/home}">客户追踪</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li ><a href="#">客户列表</a></li>
+                    <li th:if="${session.user}!=null"><a href="#about">我的客户</a></li>
+                    <li th:if="${session.user}!=null"><a href="#contact">成员列表</a></li>
+                </ul>
+                <ul th:if="${session.user}!=null" class="nav navbar-nav navbar-right">
+                    <li><a th:text="${session.user}?${session.user.userName}"></a></li>
+                    <li><a th:href="@{/users/logout}">注销</a></li>
+                </ul>
+
+                <ul  th:if="${session.user}==null" class="nav navbar-nav navbar-right">
+                    <li><a th:href="@{/users/registPage}" >注册</a></li>
+                    <!--<li><a href="#">Static top</a></li>-->
+                    <li class="active"><a th:href="@{/users/loginPage}">登陆</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+</html>

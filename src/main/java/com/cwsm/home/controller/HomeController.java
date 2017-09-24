@@ -1,13 +1,15 @@
 package com.cwsm.home.controller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.cwsm.customer.model.bean.CustomerBean;
+import com.cwsm.customer.model.bean.CustomerQueryBean;
+import com.cwsm.customer.model.bean.SaveCustomerBean;
+import com.cwsm.customer.service.CustomerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.Date;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * 首页和登录基控制器
@@ -16,20 +18,38 @@ import java.util.Date;
 @Controller
 public class HomeController {
 
+    @Autowired
+    private CustomerService customerService;
 
-    private Logger logger = LoggerFactory.getLogger(HomeController.class);
-
-
-    @RequestMapping("/")
-    String index(Model model) {
-        model.addAttribute("now", new Date());
-        return "index0";
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String index(Model model) {
+        prepareHotelDataModel();
+        prepareCustomerBeanModel();
+        model.addAttribute("pageBean", customerService.listCustomers(new CustomerQueryBean()));
+        return  "home";
+    }
+    @ModelAttribute("saveCustomerBean")
+    public SaveCustomerBean prepareCustomerBeanModel() {
+        return new SaveCustomerBean();
     }
 
-    @RequestMapping("/login")
-    String index() {
-        return "login";
+    @ModelAttribute("hotelData")
+    public HotelData prepareHotelDataModel() {
+        HotelData hotelData=new HotelData();
+        hotelData.setAddress("nan");
+        hotelData.setName("yede");
+        return hotelData;
     }
+
+    @RequestMapping(value = "/home", method = RequestMethod.GET)
+    public String showHome(Model model) {
+        prepareHotelDataModel();
+        prepareCustomerBeanModel();
+
+        return  "home";
+    }
+
+
 
 
 

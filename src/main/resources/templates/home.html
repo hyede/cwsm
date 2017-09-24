@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title>Thymeleaf example</title>
+    <link href="../static/css/styles.css"
+          th:href="@{/css/styles.css}"
+          rel="stylesheet" media="screen"/>
+
+    <link href="/webjarslocator/bootstrap/css/bootstrap.min.css"
+          th:href="@{/webjarslocator/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet" media="screen"/>
+    <link href="../static/css/core.css"
+          th:href="@{/css/core.css}"
+          rel="stylesheet" media="screen"/>
+    <script src="/webjarslocator/jquery/jquery.min.js"
+            th:src="@{/webjarslocator/jquery/jquery.min.js}"></script>
+</head>
+
+<body>
+<div th:replace="header :: header"></div>
+<div style="width:800px; margin:0 auto;">
+
+    <h1>客户追踪</h1>
+
+    <div class="generic-info">
+        <h3 >最近客户</h3>
+
+        <div th:if="${pageBean!=null}"  class="table-responsive">
+            <table  th:if="${not #lists.isEmpty(pageBean.result)}" class="table table-striped">
+                <thead>
+                <tr>
+                    <th>客户名称</th>
+                    <th>客户微信</th>
+                    <th>客户手机</th>
+                    <th>客户地址</th>
+                    <th>客户创建人</th>
+                    <th>客户创建时间</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr  th:each="customer,customerStat : ${pageBean.result}">
+                    <td th:text="${customer.customerName}"></td>
+                    <td th:text="${customer.openId}"></td>
+                    <td th:text="${customer.telephone}"></td>
+                    <td th:text="${customer.address}"></td>
+                    <td th:text="${customer.userName}"></td>
+                    <td th:text="${#dates.format(customer.createdTime,'yyyy-MM-dd HH:mm:ss')}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div class="main-block">
+        <!-- Insert new guest -->
+        <span class="subtitle">添加客户</span>
+        <form id="customerForm" th:action="@{/customers/saveCustomer}" th:object="${saveCustomerBean}" method="post">
+            <div class="insertBlock">
+                <span class="formSpan">
+                    <label for="customerName">客户名:</label>
+				    <input id="customerName" type="text" th:field="*{customerName}" required="required"/>
+                </span>
+                <span class="formSpan" style="margin-bottom:20px">
+                    <label for="openId" >微信号:</label>
+				<input id="openId" type="text" th:field="*{openId}" required="required"/>
+                </span>
+
+                <span class="formSpan">
+                    <label for="telephone">手机号:</label>
+				    <input id="telephone" type="text" th:field="*{telephone}" required="required"/>
+                </span>
+                <span class="formSpan" style="margin-bottom:20px">
+                    <label for="address" >地址:</label>
+				    <input id="address" type="text" th:field="*{address}" required="required"/>
+                </span>
+                <input  id="userId"  style="display:none" th:type="Long" th:field="*{userId}" th:value="${session.user}?${session.user.userId}" />
+                <input type="submit" class="btn btn-default" value="提交" th:value="提交"/>
+                <span class="messageContainer" th:unless="${#strings.isEmpty(MSG)}"
+                      th:text="错误信息"></span>
+            </div>
+        </form>
+
+
+    </div>
+    <footer>
+        <div th:replace="footer :: copy">&copy; 2016 blog.codeleak.pl</div>
+    </footer>
+</div>
+</body>
+
+
+</html>
