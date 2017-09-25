@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -94,14 +95,17 @@ public class CustomerService {
         queryCriteriaBuilder.setPageStart(queryBean.getPageStart());
         queryCriteriaBuilder.setPageSize(queryBean.getPageSize());
 
-        if (queryBean.getOpenId() != null) {
+        if (!StringUtils.isEmpty(queryBean.getOpenId())) {
             queryCriteriaBuilder.addCondition(qCustomer.openId.eq(queryBean.getOpenId()));
         }
-        if (queryBean.getTelephone() != null) {
+        if (!StringUtils.isEmpty(queryBean.getTelephone())) {
             queryCriteriaBuilder.addCondition(qCustomer.telephone.like("%" + queryBean.getTelephone() + "%"));
         }
         if (queryBean.getUserId() != null) {
             queryCriteriaBuilder.addCondition(qCustomer.userAccount.id.eq(queryBean.getUserId()));
+        }
+        if(!StringUtils.isEmpty(queryBean.getCustomerName())){
+            queryCriteriaBuilder.addCondition(qCustomer.customerName.like("%" + queryBean.getCustomerName()+ "%"));
         }
         QueryCriteria criteria = queryCriteriaBuilder.build();
         PageBean<Customer> pageBean = repositoryService.query(criteria);

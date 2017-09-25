@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8"/>
-    <title>Thymeleaf example</title>
+    <title>我的客户列表</title>
     <link href="../static/css/styles.css"
           th:href="@{/css/styles.css}"
           rel="stylesheet" media="screen"/>
@@ -24,12 +24,17 @@
 <div style="width:800px; margin:0 auto;">
 
     <h1>我的客户列表</h1>
-    <div  th:if="${ #lists.isEmpty(pageBean.result)}" class="table-responsive">
+    <form class="form-inline" th:action="@{${'/customers/listCustomersByUserId'}}" th:method="get">
+        <input type="text" class="form-control" name="customerName" placeholder="Search customerName..."/>
+        <input type="number" class="hidden " name="userId" th:value="${session.user.userId}"/>
+        <button class="btn btn-primary" type="submit">搜索</button>
+    </form>
+    <div th:if="${ #lists.isEmpty(pageBean.result)}" class="table-responsive">
         <h3>暂无数据</h3>
     </div>
     <div class="generic-info" th:if="${not #lists.isEmpty(pageBean.result)}">
-        <div   class="table-responsive">
-            <table  class="table table-striped">
+        <div class="table-responsive">
+            <table class="table table-striped">
                 <thead>
                 <tr>
                 <tr>
@@ -43,7 +48,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr  th:each="customer,customerStat : ${pageBean.result}">
+                <tr th:each="customer,customerStat : ${pageBean.result}">
                     <td th:text="${customer.customerName}"></td>
                     <td th:text="${customer.openId}"></td>
                     <td th:text="${customer.telephone}"></td>
@@ -60,27 +65,134 @@
 
         <!--分页-->
         <div class="col-md-12 column">
-                <ul class="pagination pull-right">
-                    <li th:class="${pageBean.pageStart eq 1} ? 'disabled' : ''">
-                        <a th:if="${pageBean.pageStart != 1}" th:href="@{${'/customers/listCustomersByUserId'}(pageStart=${pageBean.pageStart-1},pageSize=${pageBean.pageSize},userId=${session.user.userId})}">上一页</a>
-                        <a th:if="${pageBean.pageStart eq 1}" href="javascript:void(0);">上一页</a>
-                    </li>
+            <ul class="pagination pull-right" th:if="${pageBean.totalPages le 7}">
+                <li th:class="${pageBean.pageStart eq 1} ? 'disabled' : ''">
+                    <a th:if="${pageBean.pageStart != 1}"
+                       th:href="@{${'/customers/listCustomersByUserId'}(pageStart=${pageBean.pageStart-1},pageSize=${pageBean.pageSize},userId=${session.user.userId})}">上一页</a>
+                    <a th:if="${pageBean.pageStart eq 1}" href="javascript:void(0);">上一页</a>
+                </li>
 
-                    <li th:each="pageNo : ${#numbers.sequence(1, pageBean.totalPages )}" th:class="${pageBean.pageStart eq pageNo}? 'active' : ''">
-                        <a th:if="${pageBean.pageStart  eq pageNo}" href="javascript:void(0);">
-                            <span th:text="${pageNo }"></span>
-                        </a>
-                        <a th:if="${not (pageBean.pageStart  eq pageNo)}" th:href="@{${'/customers/listCustomersByUserId'}(pageStart=${pageNo},pageSize=${pageBean.pageSize},userId=${session.user.userId})}">
-                            <span th:text="${pageNo }"></span>
-                        </a>
+                <li th:each="pageNo : ${#numbers.sequence(1, pageBean.totalPages )}"
+                    th:class="${pageBean.pageStart eq pageNo}? 'active' : ''">
+                    <a th:if="${pageBean.pageStart  eq pageNo}" href="javascript:void(0);">
+                        <span th:text="${pageNo }"></span>
+                    </a>
+                    <a th:if="${not (pageBean.pageStart  eq pageNo)}"
+                       th:href="@{${'/customers/listCustomersByUserId'}(pageStart=${pageNo},pageSize=${pageBean.pageSize},userId=${session.user.userId})}">
+                        <span th:text="${pageNo }"></span>
+                    </a>
 
-                    </li>
-                    <li th:class="${pageBean.pageStart ge pageBean.totalPages} ? 'disabled' : ''">
-                        <a th:if="${ pageBean.pageStart lt pageBean.totalPages}"  th:href="@{${'/customers/listCustomersByUserId'}(pageStart=${pageBean.pageStart+1},pageSize=${pageBean.pageSize},userId=${session.user.userId})}">下一页</a>
-                        <a th:if="${pageBean.pageStart  ge pageBean.totalPages}" href="javascript:void(0);">下一页</a>
-                    </li>
-                </ul>
-            </div>
+                </li>
+                <li th:class="${pageBean.pageStart ge pageBean.totalPages} ? 'disabled' : ''">
+                    <a th:if="${ pageBean.pageStart lt pageBean.totalPages}"
+                       th:href="@{${'/customers/listCustomersByUserId'}(pageStart=${pageBean.pageStart+1},pageSize=${pageBean.pageSize},userId=${session.user.userId})}">下一页</a>
+                    <a th:if="${pageBean.pageStart  ge pageBean.totalPages}" href="javascript:void(0);">下一页</a>
+                </li>
+            </ul>
+
+            <!-- 处理页数大于7 的情况 -->
+            <ul class="pagination pull-right" th:if="${pageBean.totalPages gt 7}">
+                <!-- 上一页 -->
+                <li th:class="${pageBean.pageStart eq 1} ? 'disabled' : ''">
+                    <a th:if="${pageBean.pageStart ne 1}" aria-label="Previous"
+                       th:href="@{${'/customers/listCustomersByUserId'}(pageStart=${pageBean.pageStart -1},pageSize=${pageBean.pageSize})}">
+                        <span aria-hidden="true">上一页</span>
+                    </a>
+                    <a th:if="${pageBean.pageStart eq 1}" href="javascript:void(0);">上一页</a>
+                </li>
+
+                <!-- 首页 -->
+                <li class="page-item" th:class="${pageBean.pageStart eq 1} ? 'active' : ''">
+                    <a th:href="@{${'/customers/listCustomersByUserId'}(pageStart=1,pageSize=${pageBean.pageSize})}"
+                       class="page-link">1</a>
+                </li>
+
+
+                <!-- 当前页面小于等于4 -->
+                <li class="page-item" th:if="${pageBean.pageStart  le 4}" th:each="i : ${#numbers.sequence(2,5)}"
+                    th:classappend="${pageBean.pageStart == i } ? 'active' : ''">
+                    <a class="page-link" th:href="@{${'/users'}(pageStart=${i},pageSize=${pageBean.pageSize})}">
+                        <span th:text="${i}"></span>
+                    </a>
+                </li>
+
+                <li class="page-item disabled" th:if="${pageBean.pageStart le 4}">
+                    <a href="javascript:void(0);" class="page-link">
+                        <span aria-hidden="true">...</span>
+                    </a>
+                </li>
+
+                <!-- 最后一页与当前页面之差，小于等于3 -->
+                <li class="page-item disabled" th:if="${(pageBean.totalPages - pageBean.pageStart)  le 3}">
+                    <a href="javascript:void(0);" class="page-link">
+                        <span aria-hidden="true">...</span>
+                    </a>
+                </li>
+
+                <li class="page-item" th:if="${(pageBean.totalPages - pageBean.pageStart) le 3}"
+                    th:each="i : ${#numbers.sequence(pageBean.totalPages-4, pageBean.totalPages-1)}"
+                    th:classappend="${pageBean.pageStart  eq i} ? 'active' : ''">
+                    <a class="page-link"
+                       th:href="@{${'/customers/listCustomersByUserId'}(pageStart=${i},pageSize=${pageBean.pageSize})}"
+                       th:attr="pageIndex=${i}">
+                        <span th:text="${i}"></span>
+                    </a>
+                </li>
+
+                <!-- 最后一页与当前页面之差大于3，且  当前页面大于4-->
+
+                <li class="page-item disabled"
+                    th:if="${(pageBean.pageStart  gt 4) and ((pageBean.totalPages - pageBean.pageStart ) gt 3) }">
+                    <a href="javascript:void(0);" class="page-link">
+                        <span aria-hidden="true">...</span>
+                    </a>
+                </li>
+                <li class="page-item"
+                    th:if="${(pageBean.pageStart  gt 4) and ((pageBean.totalPages - pageBean.pageStart ) gt 3 ) }">
+                    <a href="javascript:void(0);" class="page-link"
+                       th:href="@{${'/customers/listCustomersByUserId'}(pageStart=${pageBean.pageStart-1},pageSize=${pageBean.pageSize})}"
+                       th:text="${pageBean.pageStart-1 }"></a>
+                </li>
+                <li class="page-item active"
+                    th:if="${((pageBean.pageStart ) gt 4) and ((pageBean.totalPages - pageBean.pageStart ) gt 3 )}">
+                    <a href="javascript:void(0);" class="page-link"
+                       th:href="@{${'/customers/listCustomersByUserId'}(pageStart=${pageBean.pageStart},pageSize=${pageBean.pageSize})}"
+                       th:text="${pageBean.pageStart}"></a>
+                </li>
+                <li class="page-item"
+                    th:if="${(pageBean.pageStart  gt 4) and ((pageBean.totalPages - pageBean.pageStart ) gt 3 )}">
+                    <a href="javascript:void(0);" class="page-link"
+                       th:href="@{${'/customers/listCustomersByUserId'}(pageStart=${pageBean.pageStart+1},pageSize=${pageBean.pageSize})}"
+                       th:text="${pageBean.pageStart + 1}"></a>
+                </li>
+
+                <li class="page-item disabled"
+                    th:if="${(pageBean.pageStart gt 4) and ((pageBean.totalPages - pageBean.pageStart ) gt 3 ) }">
+                    <a href="javascript:void(0);" class="page-link">
+                        <span aria-hidden="true">...</span>
+                    </a>
+                </li>
+
+                <!-- 最后一页 -->
+                <li class="page-item" th:classappend="${pageBean.pageStart eq pageBean.totalPages} ? 'active' : ''">
+                    <a href="javascript:void(0);" class="page-link" th:attr="pageIndex=${pageBean.totalPages} - 1"
+                       th:text="${pageBean.totalPages}"
+                       th:href="@{${'/customers/listCustomersByUserId'}(pageStart=${pageBean.totalPages},pageSize=${pageBean.pageSize})}"
+                    ></a>
+                </li>
+
+                <!-- 下一页 -->
+                <li class="page-item" th:class="${pageBean.pageStart ge pageBean.totalPages} ? 'disabled' : ''">
+                    <a class="page-link" aria-label="Next" th:if="${ pageBean.pageStart lt pageBean.totalPages}"
+                       th:href="@{${'/customers/listCustomersByUserId'}(pageStart=${pageBean.pageStart+1},pageSize=${pageBean.pageSize})}">
+                        <span aria-hidden="true">下一页</span>
+                    </a>
+                    <a th:if="${pageBean.pageStart  ge pageBean.totalPages}" href="javascript:void(0);">下一页</a>
+                </li>
+            </ul>
+
+
+        </div>
     </div>
 
 

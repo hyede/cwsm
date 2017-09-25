@@ -18,6 +18,7 @@ import com.cwsm.user.model.entity.UserAccount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class UserAccountService {
         queryCriteriaBuilder.setPageStart(queryBean.getPageStart());
         queryCriteriaBuilder.setPageSize(queryBean.getPageSize());
 
-        if (queryBean.getUserName() != null) {
+        if (!StringUtils.isEmpty(queryBean.getUserName())) {
             queryCriteriaBuilder.addCondition(qUserAccount.userName.like("%" + queryBean.getUserName() + "%"));
         }
 
