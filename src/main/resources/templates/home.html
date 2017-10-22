@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8"/>
     <title>主页面</title>
+    <link rel="icon" type="image/x-icon" href="../static/favicon.ico" th:href="@{/favicon.ico}"/>
     <link href="../static/css/styles.css"
           th:href="@{/css/styles.css}"
           rel="stylesheet" media="screen"/>
@@ -64,6 +65,7 @@
         <div class="insertBlock">
             <div class="col-md-12 column">
                 <form role="form" class="form-inline" th:object="${saveCustomerBean}" method="post" th:action="@{/customers/saveCustomer}">
+                    <hr/>
                     <div class="form-group">
                         <label for="customerName">客户名:</label><input id="customerName" type="text" th:field="*{customerName}" required="required" class="form-control" />
                     </div>
@@ -75,8 +77,9 @@
 
                     <div class="form-group  alert-danger" style="display: none" role="alert" id="openIdTip">微信号重复</div>
                     <br/>
+                    <hr/>
                     <div class="form-group">
-                        <label for="address">地&nbsp;&nbsp;&nbsp;址:</label><input id="address" type="text" th:field="*{address}"  class="form-control" />
+                        <label for="address">地&nbsp;&nbsp;&nbsp; 址:</label><input id="address" type="text" th:field="*{address}"  class="form-control" />
                     </div>
                     <div class="form-group">
                         <label for="telephone">手机号:</label><input id="telephone" type="number" th:field="*{telephone}" required="required" class="form-control" />

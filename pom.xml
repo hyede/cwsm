@@ -91,6 +91,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>cwsm</finalName>
 		<plugins>
 			<plugin>
 				<groupId>com.mysema.maven</groupId>

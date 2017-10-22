@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8"/>
     <title>成员列表</title>
+    <link rel="icon" type="image/x-icon" href="../static/favicon.ico" th:href="@{/favicon.ico}"/>
     <link href="../static/css/styles.css"
           th:href="@{/css/styles.css}"
           rel="stylesheet" media="screen"/>
@@ -50,9 +51,19 @@
                 <tr th:each="userAccountBean,userAccountStat : ${pageBean.result}">
                     <td th:text="${userAccountStat.index}"></td>
                     <td th:text="${userAccountBean.userName}"></td>
-                    <td th:text="${userAccountBean.password}"></td>
+                    <div th:if="${session.user}?${session.user.userId} eq ${userAccountBean.userId}">
+                        <td th:text="${userAccountBean.password}"></td>
+                    </div>
+
+                    <div th:if="${session.user}?${session.user.userId} ne ${userAccountBean.userId}">
+                        <td ><span>************</span></td>
+                    </div>
+
                     <td th:text="${userAccountBean.accountStatus}"></td>
-                    <td><a th:href="@{${'/users/getUserById'}(userId=${userAccountBean.userId})}">修改</a></td>
+                    <td>
+                        <a th:if="${session.user}?${session.user.userId} eq ${userAccountBean.userId}"
+                           th:href="@{${'/users/getUserById'}(userId=${userAccountBean.userId})}">修改</a>
+                    </td>
                 </tr>
                 </tbody>
             </table>
