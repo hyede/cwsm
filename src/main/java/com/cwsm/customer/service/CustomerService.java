@@ -32,7 +32,7 @@ public class CustomerService {
     public void saveCustomer(SaveCustomerBean customerBean) {
         boolean isExist = isExistCustomer(customerBean.getOpenId(), customerBean.getTelephone());
         if (!isExist) {
-            Customer   customer = new Customer();
+            Customer customer = new Customer();
             BeanUtils.copyProperties(customerBean, customer);
             customer.setCreatedTime(Calendar.getInstance().getTime());
             if (customerBean.getUserId() != null) {
@@ -54,30 +54,30 @@ public class CustomerService {
         }
 
         //先判断是否微信号重复
-        boolean isOpenId=isExistCustomerByOpenId(customerBean.getOpenId(),customerBean.getCustomerId());
-        if (isOpenId){
+        boolean isOpenId = isExistCustomerByOpenId(customerBean.getOpenId(), customerBean.getCustomerId());
+        if (isOpenId) {
             throw new ServiceException(ErrorCode.duplicate_openId, "重复的微信号");
         }
-        boolean isTel=isExistCustomerByTel(customerBean.getTelephone(),customerBean.getCustomerId());
-        if (isTel){
+        boolean isTel = isExistCustomerByTel(customerBean.getTelephone(), customerBean.getCustomerId());
+        if (isTel) {
             throw new ServiceException(ErrorCode.duplicate_tel, "重复的手机号");
         }
 
-        if (customerBean.getAddress()!=null){
+        if (customerBean.getAddress() != null) {
             customer.setAddress(customerBean.getAddress());
         }
 
-        if (customerBean.getOpenId()!=null){
+        if (customerBean.getOpenId() != null) {
             customer.setOpenId(customerBean.getOpenId());
         }
-        if (customerBean.getTelephone()!=null){
+        if (customerBean.getTelephone() != null) {
             customer.setTelephone(customerBean.getTelephone());
         }
-        if (customerBean.getCustomerName()!=null){
+        if (customerBean.getCustomerName() != null) {
             customer.setCustomerName(customerBean.getCustomerName());
         }
         repositoryService.save(customer);
-      return   CustomerBean.toCustomerBean(customer);
+        return CustomerBean.toCustomerBean(customer);
     }
 
 
@@ -104,8 +104,8 @@ public class CustomerService {
         if (queryBean.getUserId() != null) {
             queryCriteriaBuilder.addCondition(qCustomer.userAccount.id.eq(queryBean.getUserId()));
         }
-        if(!StringUtils.isEmpty(queryBean.getCustomerName())){
-            queryCriteriaBuilder.addCondition(qCustomer.customerName.like("%" + queryBean.getCustomerName()+ "%"));
+        if (!StringUtils.isEmpty(queryBean.getCustomerName())) {
+            queryCriteriaBuilder.addCondition(qCustomer.customerName.like("%" + queryBean.getCustomerName() + "%"));
         }
         QueryCriteria criteria = queryCriteriaBuilder.build();
         PageBean<Customer> pageBean = repositoryService.query(criteria);
@@ -140,7 +140,7 @@ public class CustomerService {
 
     // 查询客户是否存在 通过手机
     @Transactional
-    public boolean isExistCustomerByTel(String tel ,Long additionalCustomerId) {
+    public boolean isExistCustomerByTel(String tel, Long additionalCustomerId) {
         if (tel == null) {
             return false;
         }
@@ -149,7 +149,49 @@ public class CustomerService {
 
         queryCriteriaBuilder.addCondition(qCustomer.telephone.eq(tel));
 
-        if (additionalCustomerId!=null){
+        if (additionalCustomerId != null) {
+            queryCriteriaBuilder.addCondition(qCustomer.id.ne(additionalCustomerId));
+        }
+
+        QueryCriteria queryCriteria = queryCriteriaBuilder.build();
+        return repositoryService.exist(queryCriteria);
+    }
+
+
+    // 查询客户 通过手机
+    @Transactional
+    public Customer getCustomerByTel(String tel, Long additionalCustomerId) {
+        if (tel == null) {
+            return null;
+        }
+        QCustomer qCustomer = QCustomer.customer;
+        QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(Customer.class);
+
+        if (additionalCustomerId != null) {
+            queryCriteriaBuilder.addCondition(qCustomer.id.ne(additionalCustomerId));
+        }
+        queryCriteriaBuilder.setPageSize(Integer.MAX_VALUE);
+        queryCriteriaBuilder.addCondition(qCustomer.telephone.eq(tel));
+        QueryCriteria queryCriteria = queryCriteriaBuilder.build();
+        PageBean<Customer> pageBean = repositoryService.query(queryCriteria);
+        if (pageBean.getResult() != null && !pageBean.getResult().isEmpty()) {
+            return pageBean.getResult().get(0);
+        }
+        return null;
+    }
+
+
+    // 查询客户是否存在 通过微信号
+    @Transactional
+    public boolean isExistCustomerByOpenId(String openId, Long additionalCustomerId) {
+        if (openId == null) {
+            return false;
+        }
+        QCustomer qCustomer = QCustomer.customer;
+        QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(Customer.class);
+
+        queryCriteriaBuilder.addCondition(qCustomer.openId.eq(openId));
+        if (additionalCustomerId != null) {
             queryCriteriaBuilder.addCondition(qCustomer.id.ne(additionalCustomerId));
         }
 
@@ -159,20 +201,24 @@ public class CustomerService {
 
     // 查询客户是否存在 通过微信号
     @Transactional
-    public boolean isExistCustomerByOpenId(String openId,Long additionalCustomerId) {
+    public Customer getCustomerByOpenId(String openId, Long additionalCustomerId) {
         if (openId == null) {
-            return false;
+            return null;
         }
         QCustomer qCustomer = QCustomer.customer;
         QueryCriteriaBuilder queryCriteriaBuilder = new QueryCriteriaBuilder(Customer.class);
 
         queryCriteriaBuilder.addCondition(qCustomer.openId.eq(openId));
-        if (additionalCustomerId!=null){
+        if (additionalCustomerId != null) {
             queryCriteriaBuilder.addCondition(qCustomer.id.ne(additionalCustomerId));
         }
-
+        queryCriteriaBuilder.setPageSize(Integer.MAX_VALUE);
         QueryCriteria queryCriteria = queryCriteriaBuilder.build();
-        return repositoryService.exist(queryCriteria);
+        PageBean<Customer> pageBean = repositoryService.query(queryCriteria);
+        if (pageBean.getResult() != null && !pageBean.getResult().isEmpty()) {
+            return pageBean.getResult().get(0);
+        }
+        return null;
     }
 
     // 通过id删除客户

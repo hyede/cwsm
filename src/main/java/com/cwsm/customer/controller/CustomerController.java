@@ -3,6 +3,7 @@ package com.cwsm.customer.controller;
 import com.cwsm.customer.model.bean.CustomerBean;
 import com.cwsm.customer.model.bean.CustomerQueryBean;
 import com.cwsm.customer.model.bean.SaveCustomerBean;
+import com.cwsm.customer.model.entity.Customer;
 import com.cwsm.customer.service.CustomerService;
 import com.cwsm.platfrom.exception.ServiceException;
 import com.cwsm.platfrom.model.bean.PageBean;
@@ -59,15 +60,13 @@ public class CustomerController {
     }
 
 
-
-
-
     @RequestMapping(value = "/checkOpenId", method = RequestMethod.GET)
     @ResponseBody
-    public String checkOpenId(@RequestParam String openId,@RequestParam(required = false) Long additionalCustomerId) {
+    public String checkOpenId(@RequestParam String openId, @RequestParam(required = false) Long additionalCustomerId) {
         boolean isExist = customerService.isExistCustomerByOpenId(openId, additionalCustomerId);
         if (isExist) {
-            return "1";
+            Customer customer = customerService.getCustomerByOpenId(openId, additionalCustomerId);
+            return "1@" + customer.getUserAccount().getUserName();
         } else {
             return "-1";
         }
@@ -75,10 +74,11 @@ public class CustomerController {
 
     @RequestMapping(value = "/checkTel", method = RequestMethod.GET)
     @ResponseBody
-    public String checkTel(String telephone,@RequestParam(required = false) Long additionalCustomerId) {
-        boolean isExist = customerService.isExistCustomerByTel(telephone,additionalCustomerId);
+    public String checkTel(String telephone, @RequestParam(required = false) Long additionalCustomerId) {
+        boolean isExist = customerService.isExistCustomerByTel(telephone, additionalCustomerId);
         if (isExist) {
-            return "1";
+            Customer customer = customerService.getCustomerByTel(telephone, additionalCustomerId);
+            return "1@" + customer.getUserAccount().getUserName();
         } else {
             return "-1";
         }
@@ -86,7 +86,7 @@ public class CustomerController {
 
 
     @RequestMapping(value = "listCustomersByUserId", method = RequestMethod.GET)
-    public ModelAndView listCustomersBy(CustomerQueryBean queryBean,Map<String, Object> map) {
+    public ModelAndView listCustomersBy(CustomerQueryBean queryBean, Map<String, Object> map) {
 
         PageBean<CustomerBean> pageBean = customerService.listCustomers(queryBean);
         map.put("pageBean", pageBean);
@@ -94,15 +94,15 @@ public class CustomerController {
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
-    public ModelAndView deleteCustomerIdByCustomerId(long customerId,Map<String, Object> map) {
+    public ModelAndView deleteCustomerIdByCustomerId(long customerId, Map<String, Object> map) {
         customerService.deleteCustomerIdByCustomerId(customerId);
-        map.put("url", "./customers/listCustomersByUserId?userId"+AppSec.getLoginUser().getUserId());
+        map.put("url", "../customers/listCustomersByUserId?userId=" + AppSec.getLoginUser().getUserId());
         return new ModelAndView("fragments/success", map);
     }
 
     @RequestMapping(value = "/getCustomerById", method = RequestMethod.GET)
-    public ModelAndView getCustomerById(long customerId,Map<String, Object> map) {
-        CustomerBean customerBean=customerService.getCustomerIdByCustomerId(customerId);
+    public ModelAndView getCustomerById(long customerId, Map<String, Object> map) {
+        CustomerBean customerBean = customerService.getCustomerIdByCustomerId(customerId);
         map.put("customerBean", customerBean);
         return new ModelAndView("customerEdit", map);
     }
@@ -123,7 +123,7 @@ public class CustomerController {
                 return new ModelAndView("fragments/error", map);
             }
         }
-        map.put("url", "../customers/listCustomersByUserId?userId="+AppSec.getLoginUser().getUserId());
+        map.put("url", "../customers/listCustomersByUserId?userId=" + AppSec.getLoginUser().getUserId());
         return new ModelAndView("fragments/success", map);
     }
 

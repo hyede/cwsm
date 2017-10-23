@@ -27,10 +27,10 @@
     <h1>客户追踪</h1>
 
     <div class="generic-info">
-        <h3 >最近客户</h3>
+        <h3>最近客户</h3>
 
-        <div th:if="${pageBean!=null}"  class="table-responsive">
-            <table  th:if="${not #lists.isEmpty(pageBean.result)}" class="table table-striped">
+        <div th:if="${pageBean!=null}" class="table-responsive">
+            <table th:if="${not #lists.isEmpty(pageBean.result)}" class="table table-striped">
                 <thead>
                 <tr>
                     <th>客户名称</th>
@@ -42,7 +42,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr  th:each="customer,customerStat : ${pageBean.result}">
+                <tr th:each="customer,customerStat : ${pageBean.result}">
                     <td th:text="${customer.customerName}"></td>
                     <td th:text="${customer.openId}"></td>
                     <td th:text="${customer.telephone}"></td>
@@ -56,38 +56,44 @@
     </div>
 
 
-
-
-
     <div class="main-block">
         <!-- Insert new guest -->
         <span class="subtitle">添加客户</span>
         <div class="insertBlock">
             <div class="col-md-12 column">
-                <form role="form" class="form-inline" th:object="${saveCustomerBean}" method="post" th:action="@{/customers/saveCustomer}">
+                <form role="form" class="form-inline" th:object="${saveCustomerBean}" method="post"
+                      th:action="@{/customers/saveCustomer}">
                     <hr/>
                     <div class="form-group">
-                        <label for="customerName">客户名:</label><input id="customerName" type="text" th:field="*{customerName}" required="required" class="form-control" />
+                        <label for="customerName">客户名:</label><input id="customerName" type="text"
+                                                                     th:field="*{customerName}" required="required"
+                                                                     class="form-control"/>
                     </div>
 
 
                     <div class="form-group">
-                        <label for="openId">微信号:</label><input id="openId" type="text" th:field="*{openId}" required="required" class="form-control" />
+                        <label for="openId">微信号:</label><input id="openId" type="text" th:field="*{openId}"
+                                                               required="required" class="form-control"/>
                     </div>
 
                     <div class="form-group  alert-danger" style="display: none" role="alert" id="openIdTip">微信号重复</div>
                     <br/>
                     <hr/>
                     <div class="form-group">
-                        <label for="address">地&nbsp;&nbsp;&nbsp; 址:</label><input id="address" type="text" th:field="*{address}"  class="form-control" />
+                        <label for="address">地&nbsp;&nbsp;&nbsp; 址:</label><input id="address" type="text"
+                                                                                  th:field="*{address}"
+                                                                                  class="form-control"/>
                     </div>
                     <div class="form-group">
-                        <label for="telephone">手机号:</label><input id="telephone" type="number" th:field="*{telephone}" required="required" class="form-control" />
+                        <label for="telephone">手机号:</label><input id="telephone" type="number" th:field="*{telephone}"
+                                                                  required="required" class="form-control"/>
                     </div>
-                    <div class="form-group  alert-danger" style="display: none" role="alert" id="telephoneTip">手机号重复</div>
+                    <div class="form-group  alert-danger" style="display: none" role="alert" id="telephoneTip">手机号重复
+                    </div>
 
 
-                    <input id="userId" type="number" th:field="*{userId}"  class="hidden" th:value="${session.user}?${session.user.userId}:1" />
+                    <input id="userId" type="number" th:field="*{userId}" class="hidden"
+                           th:value="${session.user}?${session.user.userId}:1"/>
                     <br/>
                     <br/>
                     <button type="submit" class="btn btn-primary btn-block">提交</button>
@@ -96,9 +102,6 @@
             </div>
 
         </div>
-
-
-
 
 
     </div>
@@ -120,9 +123,10 @@
 
         var openId = $("#openId").val();
 
-        $.get("./customers/checkOpenId?openId="+openId, function (result) {
-            if (result == "1") {
-                $("#openIdTip").fadeIn();
+        $.get("./customers/checkOpenId?openId=" + openId, function (result) {
+
+            if (result.substr(0, 1) == "1") {
+                $("#openIdTip").text("微信号重复, 与"+result.substr(2)+"的重复").fadeIn();
             }
         });
     });
@@ -131,9 +135,10 @@
 
         var telephone = $("#telephone").val();
 
-        $.get("./customers/checkTel?telephone="+telephone, function (result) {
-            if (result == "1") {
-                $("#telephoneTip").fadeIn();
+        $.get("./customers/checkTel?telephone=" + telephone, function (result) {
+
+            if (result.substr(0, 1) == "1") {
+                $("#telephoneTip").text("手机号重复, 与"+result.substr(2)+"的重复").fadeIn();
             }
         });
     });

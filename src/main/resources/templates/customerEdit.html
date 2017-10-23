@@ -52,7 +52,7 @@
                     <div class="form-group">
                         <label>地址</label>
                         <input id="address" type="text" th:value="${customerBean.address}" th:field="*{address}"
-                               required="required" class="form-control"/>
+                               class="form-control"/>
                     </div>
                     <div class="form-group">
                         <label>手机号</label>
@@ -90,8 +90,8 @@
         var customerId = $("#customerId").val();
 
         $.get("./checkOpenId",{ openId: openId, additionalCustomerId: customerId}, function (result) {
-            if (result == "1") {
-                $("#openIdTip").fadeIn();
+            if (result.substr(0, 1) == "1") {
+                $("#openIdTip").text("微信号重复, 与"+result.substr(2)+"的重复").fadeIn();
             }
         });
     });
@@ -102,8 +102,8 @@
         var customerId = $("#customerId").val();
 
         $.get("./checkTel",{ telephone: telephone, additionalCustomerId: customerId} , function (result) {
-            if (result == "1") {
-                $("#telephoneTip").fadeIn();
+            if (result.substr(0, 1) == "1") {
+                $("#telephoneTip").text("手机号重复, 与"+result.substr(2)+"的重复").fadeIn();
             }
         });
     });
