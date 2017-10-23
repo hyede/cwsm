@@ -1,8 +1,5 @@
 package com.cwsm.user.service;
 
-import com.cwsm.customer.model.bean.CustomerBean;
-import com.cwsm.customer.model.entity.Customer;
-import com.cwsm.customer.model.entity.QCustomer;
 import com.cwsm.platfrom.exception.ErrorCode;
 import com.cwsm.platfrom.exception.ServiceException;
 import com.cwsm.platfrom.model.bean.PageBean;

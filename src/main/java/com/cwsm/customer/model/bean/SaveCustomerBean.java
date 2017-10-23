@@ -9,7 +9,7 @@ public class SaveCustomerBean extends GenericObject {
     private String customerName;
     @NotEmpty(message="微信号: 不能为空")
     private String openId;
-    @NotEmpty(message="手机: 不能为空")
+//    @NotEmpty(message="手机: 不能为空")
     private String telephone;
     private  String address;
     private Long userId;

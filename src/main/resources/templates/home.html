@@ -86,7 +86,7 @@
                     </div>
                     <div class="form-group">
                         <label for="telephone">手机号:</label><input id="telephone" type="number" th:field="*{telephone}"
-                                                                  required="required" class="form-control"/>
+                                                                  class="form-control"/>
                     </div>
                     <div class="form-group  alert-danger" style="display: none" role="alert" id="telephoneTip">手机号重复
                     </div>
@@ -115,9 +115,9 @@
         $("#openIdTip").fadeOut();
     });
 
-    $("#telephone").focus(function () {
-        $("#telephoneTip").fadeOut();
-    });
+//    $("#telephone").focus(function () {
+//        $("#telephoneTip").fadeOut();
+//    });
 
     $("#openId").blur(function () {
 
@@ -131,17 +131,17 @@
         });
     });
 
-    $("#telephone").blur(function () {
-
-        var telephone = $("#telephone").val();
-
-        $.get("./customers/checkTel?telephone=" + telephone, function (result) {
-
-            if (result.substr(0, 1) == "1") {
-                $("#telephoneTip").text("手机号重复, 与"+result.substr(2)+"的重复").fadeIn();
-            }
-        });
-    });
+//    $("#telephone").blur(function () {
+//
+//        var telephone = $("#telephone").val();
+//
+//        $.get("./customers/checkTel?telephone=" + telephone, function (result) {
+//
+//            if (result.substr(0, 1) == "1") {
+//                $("#telephoneTip").text("手机号重复, 与"+result.substr(2)+"的重复").fadeIn();
+//            }
+//        });
+//    });
 
 
 </script>

@@ -58,10 +58,10 @@ public class CustomerService {
         if (isOpenId) {
             throw new ServiceException(ErrorCode.duplicate_openId, "重复的微信号");
         }
-        boolean isTel = isExistCustomerByTel(customerBean.getTelephone(), customerBean.getCustomerId());
-        if (isTel) {
-            throw new ServiceException(ErrorCode.duplicate_tel, "重复的手机号");
-        }
+//        boolean isTel = isExistCustomerByTel(customerBean.getTelephone(), customerBean.getCustomerId());
+//        if (isTel) {
+//            throw new ServiceException(ErrorCode.duplicate_tel, "重复的手机号");
+//        }
 
         if (customerBean.getAddress() != null) {
             customer.setAddress(customerBean.getAddress());
@@ -131,9 +131,9 @@ public class CustomerService {
         if (openId != null) {
             queryCriteriaBuilder.addCondition(qCustomer.openId.eq(openId));
         }
-        if (tel != null) {
-            queryCriteriaBuilder.addCondition(qCustomer.telephone.eq(tel));
-        }
+//        if (tel != null) {
+//            queryCriteriaBuilder.addCondition(qCustomer.telephone.eq(tel));
+//        }
         QueryCriteria queryCriteria = queryCriteriaBuilder.buildOR();
         return repositoryService.exist(queryCriteria);
     }
