@@ -56,7 +56,7 @@
 
     $("#zhuce").click(function () {
 
-        var username1 = /^[\u4E00-\u9FA5a-zA-Z0-9_]{3,20}$/;
+        var username1 = /^[\u4E00-\u9FA5a-zA-Z0-9_]{2,20}$/;
         var password1 = /^[0-9]{6,10}/;
         //注册按钮的事件，用ajax提交表单
         var userName = $("#username").val();
@@ -64,7 +64,7 @@
         var password = $("#password").val();
 
         if (!username1.test(userName)) {
-            alert("用户名必须是汉字 英文字母 数字 下划线组成，3-20位");
+            alert("用户名必须是汉字 英文字母 数字 下划线组成，2-20位");
             return false;
         }
         if (!password1.test(password)) {

@@ -128,7 +128,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/updateUserAccount", method = RequestMethod.POST)
-    public ModelAndView updateCustomerIdByCustomerId(Map<String, Object> map, @Valid SaveUserBean saveUserBean, BindingResult result) {
+    public ModelAndView updateUserIdByUserId(Map<String, Object> map, @Valid SaveUserBean saveUserBean, BindingResult result,HttpSession session) {
         if (result.hasErrors()) {
             map.put("msg", result.getFieldError().getDefaultMessage());
             map.put("url", "../home");
@@ -143,7 +143,11 @@ public class UserController {
                 return new ModelAndView("fragments/error", map);
             }
         }
-        map.put("url", "../users");
+
+        // 移除session
+        session.removeAttribute(WebMvcConf.SESSION_KEY);
+        AppSec.clearLoginUser();
+        map.put("url", "../users/loginPage");
         return new ModelAndView("fragments/success", map);
     }
 
